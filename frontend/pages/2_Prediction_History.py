@@ -12,14 +12,14 @@ st.set_page_config(
     page_title="Prediction History | Insurance Risk Analyzer",
     page_icon="📜",
     layout="wide"
+
 )
 
-API_URL = "http://127.0.0.1:8000/history"
 
-# --------------------------------------------------
-# 2. Custom styling
-# --------------------------------------------------
+import os
 
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
+HISTORY_URL = f"{API_URL}/history"
 
 # --------------------------------------------------
 # 2. Custom styling
@@ -182,7 +182,7 @@ st.divider()
 
 @st.cache_data(ttl=30)
 def fetch_history():
-    response = requests.get(API_URL, timeout=10)
+    response = requests.get(HISTORY_URL, timeout=30)
     response.raise_for_status()
 
     records = response.json()

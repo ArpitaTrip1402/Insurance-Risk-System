@@ -13,9 +13,9 @@ st.set_page_config(
     layout="wide"
 )
 
+import os
 
-
-API_URL = "http://127.0.0.1:8000"
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 #
 # --------------------------------------------------
@@ -36,25 +36,50 @@ st.markdown("""
     background-color: #F4F7FC !important;
 }
 
-/* Keep toolbar icons visible */
+/* Toolbar icons */
 [data-testid="stToolbar"] {
     color: #12304A !important;
 }
 
-/* Make metric labels readable */
+/* Main content layout */
+.block-container {
+    padding-top: 1.8rem;
+    padding-bottom: 2rem;
+    max-width: 1400px;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #102A43 0%, #163D5C 100%) !important;
+}
+
+[data-testid="stSidebar"] * {
+    color: #F0F6FC;
+}
+
+/* Metric cards */
+div[data-testid="stMetric"] {
+    background-color: #FFFFFF;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #DFE7F1;
+    box-shadow: 0 3px 12px rgba(20, 48, 74, 0.06);
+}
+
 [data-testid="stMetricLabel"],
 [data-testid="stMetricLabel"] p {
     color: #526780 !important;
     opacity: 1 !important;
+    font-size: 0.95rem;
 }
 
-/* Metric values */
 [data-testid="stMetricValue"],
 [data-testid="stMetricValue"] div {
     color: #12304A !important;
+    font-weight: 700;
 }
 
-/* Make the Medium Risk alert readable */
+/* Alerts */
 [data-testid="stAlert"] {
     background-color: #FFF4CC !important;
     color: #7C4A03 !important;
@@ -66,88 +91,84 @@ st.markdown("""
     color: #7C4A03 !important;
 }
 
-    /* Main page */
-    .stApp {
-        background-color: #F4F7FC;
-        color: #172B4D;
-    }
+/* Buttons */
+.stButton > button,
+.stFormSubmitButton > button {
+    background-color: #087E8B;
+    color: #FFFFFF !important;
+    border: 1px solid #087E8B;
+    border-radius: 9px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
 
-    .block-container {
-        padding-top: 1.8rem;
-        padding-bottom: 2rem;
-        max-width: 1400px;
-    }
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {
+    background-color: #066570;
+    border-color: #066570;
+    color: #FFFFFF !important;
+}
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #102A43 0%, #163D5C 100%);
-    }
+/* Disclaimer */
+.disclaimer {
+    background-color: #E8F4F5;
+    color: #164E63;
+    padding: 14px 16px;
+    border-radius: 8px;
+    border-left: 4px solid #087E8B;
+    font-size: 0.92rem;
+}
 
-    [data-testid="stSidebar"] * {
-        color: #F0F6FC;
-    }
+/* Form fields */
+div[data-baseweb="input"] > div,
+div[data-baseweb="select"] > div {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    border-color: #CCD8E5;
+}
 
-    /* Metric cards */
-    div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        padding: 18px;
-        border-radius: 12px;
-        border: 1px solid #DFE7F1;
-        box-shadow: 0 3px 12px rgba(20, 48, 74, 0.06);
-    }
+/* Hide Streamlit input keyboard hints */
+div[data-testid="InputInstructions"],
+div[data-testid="InputInstructions"] *,
+[data-testid="stForm"] small {
+    display: none !important;
+}
 
-    div[data-testid="stMetricLabel"] p {
-        color: #526780 !important;
-        font-size: 0.95rem;
-    }
+/* Sidebar expand/collapse control — target the control and its button */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] button,
+[data-testid="stSidebarCollapsedControl"] button,
+button[data-testid="collapsedControl"],
+button[data-testid="stSidebarCollapsedControl"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: #0D9488 !important;
+    border: 2px solid #FFFFFF !important;
+    border-radius: 8px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+}
 
-    div[data-testid="stMetricValue"] {
-        color: #12304A !important;
-        font-weight: 700;
-    }
+/* Keep the toggle icon white */
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapsedControl"] svg,
+button[data-testid="collapsedControl"] svg,
+button[data-testid="stSidebarCollapsedControl"] svg {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+    fill: none !important;
+    opacity: 1 !important;
+}
 
-    /* Buttons */
-    .stButton > button,
-    .stFormSubmitButton > button {
-        background-color: #087E8B;
-        color: #FFFFFF !important;
-        border: 1px solid #087E8B;
-        border-radius: 9px;
-        font-weight: 600;
-        transition: background-color 0.2s ease;
-    }
-
-    .stButton > button:hover,
-    .stFormSubmitButton > button:hover {
-        background-color: #066570;
-        border-color: #066570;
-        color: #FFFFFF !important;
-    }
-
-    /* Disclaimer */
-    .disclaimer {
-        background-color: #E8F4F5;
-        color: #164E63;
-        padding: 14px 16px;
-        border-radius: 8px;
-        border-left: 4px solid #087E8B;
-        font-size: 0.92rem;
-    }
-
-    /* Form fields */
-    div[data-baseweb="input"] > div,
-    div[data-baseweb="select"] > div {
-        background-color: #FFFFFF;
-        border-radius: 8px;
-        border-color: #CCD8E5;
-    }
-
-    /* Hide Streamlit form keyboard hint */
-    div[data-testid="InputInstructions"],
-    div[data-testid="InputInstructions"] *,
-    [data-testid="stForm"] small {
-        display: none !important;
-    }
+/* Hover state */
+[data-testid="collapsedControl"]:hover,
+[data-testid="stSidebarCollapsedControl"]:hover,
+[data-testid="collapsedControl"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover {
+    background: #0F766E !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
