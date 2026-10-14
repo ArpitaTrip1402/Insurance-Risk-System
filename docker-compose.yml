@@ -10,12 +10,13 @@ services:
     env_file:
       - .env
     environment:
+      PORT: "8000"
       DB_HOST: host.docker.internal
       DB_PORT: ${DB_PORT:-5432}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   frontend:
     build:
@@ -25,8 +26,10 @@ services:
     container_name: insurance-risk-frontend
     restart: unless-stopped
     environment:
+      PORT: "8501"
       API_URL: http://backend:8000
     ports:
       - "8501:8501"
     depends_on:
       - backend
+
