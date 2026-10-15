@@ -141,12 +141,12 @@ def predict(data: InsuranceInput):
                     )
                 )
 
-    except Exception:
-        raise HTTPException(
-            status_code=503,
-            detail="Prediction was generated, but saving history failed. "
-                   "Please check the database connection."
-        )
+    except Exception as e:
+     print(f"Database history save failed: {type(e).__name__}: {e}")
+     raise HTTPException(
+        status_code=503,
+        detail="Prediction was generated, but saving history failed. Check backend logs."
+    )
 
     return {
         "predicted_charge": round(predicted_charge, 2),
