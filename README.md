@@ -22,7 +22,7 @@
   &nbsp; • &nbsp;
   <a href="https://github.com/ArpitaTrip1402/Insurance-Risk-System">💻 Source Code</a>
   &nbsp; • &nbsp;
-  <a href="YOUR_RENDER_FRONTEND_URL">🌐 Live Application</a>
+  <a href=" https://insurance-risk-frontend.onrender.com">🌐 Live Application</a>
 </p>
 
 ---
