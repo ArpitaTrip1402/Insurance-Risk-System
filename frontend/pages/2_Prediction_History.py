@@ -25,136 +25,714 @@ HISTORY_URL = f"{API_URL}/history"
 # 2. Custom styling
 # --------------------------------------------------
 
-st.markdown(
-    """
-    <style>
-    
-/* Match the light background on both pages */
-.stApp {
-    background-color: #F4F7FC !important;
+st.markdown("""
+<style>
+
+/* =====================================
+   1. DARK THEME COLORS
+===================================== */
+
+:root {
+    --bg-main: #0B1220;
+    --bg-card: #142238;
+    --bg-card-hover: #1A2D46;
+    --bg-input: #101C2E;
+    --bg-sidebar: #0D1B2D;
+    --border: #2B405B;
+    --text-main: #E5EDF8;
+    --text-muted: #9FB0C8;
+    --accent: #19C3B3;
+    --accent-hover: #13A99B;
 }
 
-/* Light Streamlit top header */
+/* Main app background */
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+    background-color: var(--bg-main) !important;
+    color: var(--text-main) !important;
+}
+
+/* Main page spacing */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1450px;
+}
+
+/* Top header */
 [data-testid="stHeader"] {
-    background-color: #F4F7FC !important;
+    background-color: var(--bg-main) !important;
 }
 
-/* Keep the top toolbar readable */
+/* Toolbar */
 [data-testid="stToolbar"] {
-    color: #12304A !important;
+    color: var(--text-main) !important;
 }
 
-/* Ensure metric text stays readable */
-[data-testid="stMetricLabel"],
-[data-testid="stMetricLabel"] p {
-    color: #526780 !important;
+/* =====================================
+   2. SIDEBAR
+===================================== */
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #0D1B2D 0%,
+        #102A43 100%
+    ) !important;
+    border-right: 1px solid var(--border);
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    background: transparent !important;
+}
+
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] span {
+    color: var(--text-main) !important;
+}
+
+/* =====================================
+   3. SIDEBAR TOGGLE ARROW
+   Always visible, not hover-dependent
+===================================== */
+
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Toggle button */
+[data-testid="stSidebarCollapseButton"] button,
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button,
+button[kind="header"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    background-color: #142238 !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 8px rgba(25, 195, 179, 0.15);
+}
+
+/* Arrow icon */
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg,
+button[kind="header"] svg {
+    color: var(--accent) !important;
+    fill: var(--accent) !important;
+    stroke: var(--accent) !important;
     opacity: 1 !important;
 }
 
-[data-testid="stMetricValue"],
-[data-testid="stMetricValue"] div {
-    color: #12304A !important;
+/* Toggle hover */
+[data-testid="stSidebarCollapseButton"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="collapsedControl"] button:hover,
+button[kind="header"]:hover {
+    background-color: #1A3650 !important;
+    border-color: #5DE8DA !important;
+    color: #5DE8DA !important;
 }
 
-    /* Main page */
-    .stApp {
-        background-color: #F4F7FC;
-        color: #172B4D;
-    }
+/* =====================================
+   4. HEADINGS AND TEXT
+===================================== */
 
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-main) !important;
+}
+
+p,
+label,
+.stMarkdown,
+[data-testid="stMarkdownContainer"] {
+    color: var(--text-main);
+}
+
+.history-subtitle {
+    color: var(--text-muted) !important;
+    font-size: 15px;
+}
+
+/* Captions */
+[data-testid="stCaptionContainer"],
+.stCaption {
+    color: var(--text-muted) !important;
+}
+
+/* =====================================
+   5. METRIC CARDS
+===================================== */
+
+[data-testid="stMetric"] {
+    background: var(--bg-card) !important;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    transition: border-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+[data-testid="stMetric"]:hover {
+    border-color: var(--accent) !important;
+    transform: translateY(-2px);
+}
+
+/* Metric labels */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] p,
+[data-testid="stMetricLabel"] label {
+    color: var(--text-muted) !important;
+    opacity: 1 !important;
+}
+
+/* Metric values */
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] div {
+    color: var(--text-main) !important;
+    font-weight: 700 !important;
+}
+
+/* Metric delta */
+[data-testid="stMetricDelta"] {
+    color: var(--accent) !important;
+}
+
+/* =====================================
+   6. BUTTONS
+===================================== */
+
+.stButton > button,
+.stDownloadButton > button,
+.stFormSubmitButton > button {
+    background: var(--accent) !important;
+    color: #061923 !important;
+    border: 1px solid var(--accent) !important;
+    border-radius: 9px;
+    padding: 0.55rem 1rem;
+    font-weight: 700;
+    transition: background-color 0.2s ease,
+                border-color 0.2s ease;
+}
+
+.stButton > button p,
+.stDownloadButton > button p,
+.stFormSubmitButton > button p {
+    color: #061923 !important;
+    font-weight: 700;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover,
+.stFormSubmitButton > button:hover {
+    background: var(--accent-hover) !important;
+    border-color: var(--accent-hover) !important;
+}
+
+.stButton > button:focus,
+.stDownloadButton > button:focus,
+.stFormSubmitButton > button:focus {
+    box-shadow: 0 0 0 3px rgba(25, 195, 179, 0.25) !important;
+    outline: none;
+}
+
+/* =====================================
+   7. INPUTS AND SELECTBOXES
+===================================== */
+
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div,
+[data-baseweb="input"],
+[data-baseweb="textarea"] {
+    background-color: var(--bg-input) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+    border-radius: 8px;
+}
+
+/* Input text */
+input,
+textarea {
+    background-color: var(--bg-input) !important;
+    color: var(--text-main) !important;
+    caret-color: var(--accent);
+}
+
+/* Dropdown text */
+[data-baseweb="select"] span {
+    color: var(--text-main) !important;
+}
+
+/* Dropdown menu */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[role="listbox"] {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border) !important;
+}
+
+[role="option"] {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+}
+
+[role="option"]:hover {
+    background-color: var(--bg-card-hover) !important;
+}
+
+/* =====================================
+   8. DATAFRAME AND TABLES
+===================================== */
+
+[data-testid="stDataFrame"],
+[data-testid="stTable"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* =====================================
+   9. CONTAINERS AND EXPANDERS
+===================================== */
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border-color: var(--border) !important;
+    border-radius: 12px;
+}
+
+[data-testid="stExpander"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px;
+}
+
+[data-testid="stExpander"] summary {
+    color: var(--text-main) !important;
+}
+
+/* =====================================
+   10. ALERTS
+===================================== */
+
+[data-testid="stAlert"] {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 10px;
+}
+
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span {
+    color: var(--text-main) !important;
+}
+
+/* =====================================
+   11. LINKS AND DIVIDERS
+===================================== */
+
+a {
+    color: var(--accent) !important;
+}
+
+a:hover {
+    color: #5DE8DA !important;
+}
+
+hr {
+    border-color: var(--border) !important;
+}
+
+/* =====================================
+   12. TABS
+===================================== */
+
+[data-testid="stTabs"] button {
+    color: var(--text-muted) !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+    color: var(--accent) !important;
+    border-bottom-color: var(--accent) !important;
+}
+
+/* =====================================
+   13. CHARTS
+===================================== */
+
+[data-testid="stPlotlyChart"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+/* =====================================
+   14. HIDE STREAMLIT MENU AND FOOTER
+===================================== */
+
+#MainMenu {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+footer {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.stDeployButton {
+    display: none !important;
+}
+
+/* =====================================
+   15. SCROLLBAR
+===================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #344960;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #526C88;
+}
+
+/* =====================================
+   16. RESPONSIVE DESIGN
+===================================== */
+
+@media (max-width: 768px) {
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        max-width: 1450px;
+        padding: 1rem 0.8rem 2rem 0.8rem;
     }
 
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #102A43 0%, #163D5C 100%);
+    [data-testid="stMetric"] {
+        padding: 12px;
+    }
+}
+/* Additional responsive improvements */
+
+/* Prevent content from overflowing */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.block-container {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Make buttons fit smaller screens */
+.stButton > button,
+.stDownloadButton > button,
+.stFormSubmitButton > button {
+    max-width: 100%;
+    white-space: normal;
+}
+
+/* Keep charts within the available width */
+[data-testid="stPlotlyChart"],
+[data-testid="stDataFrame"] {
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* Mobile layout */
+@media screen and (max-width: 768px) {
+    .block-container {
+        padding: 1rem 0.75rem !important;
     }
 
-    [data-testid="stSidebar"] * {
-        color: #F0F6FC;
+    [data-testid="stMetric"] {
+        padding: 12px !important;
+        overflow-wrap: anywhere;
     }
 
-    /* Headings */
-    h1, h2, h3 {
-        color: #12304A !important;
+    [data-testid="stMetricValue"] {
+        font-size: 1.25rem;
+    }
+
+    h1 {
+        font-size: 1.7rem !important;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .stButton > button,
+    .stDownloadButton > button,
+    .stFormSubmitButton > button {
+        width: 100%;
+    }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 480px) {
+    .block-container {
+        padding: 0.75rem 0.5rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 10px !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1.1rem;
+    }
+}
+
+/* =========================================
+   MOBILE RESPONSIVE DESIGN
+========================================= */
+
+/* Prevent horizontal overflow */
+html,
+body,
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main .block-container {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Keep all elements within their containers */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Tablet and mobile */
+@media screen and (max-width: 768px) {
+
+    .main .block-container {
+        padding: 1.25rem 1rem 2rem 1rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Responsive page headings */
+    h1 {
+        font-size: clamp(1.65rem, 6vw, 2.2rem) !important;
+        line-height: 1.3 !important;
+        overflow-wrap: anywhere;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+        line-height: 1.35 !important;
+    }
+
+    h3 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Body text */
+    p,
+    .history-subtitle,
+    [data-testid="stMarkdownContainer"] {
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    .history-subtitle {
+        font-size: 0.98rem !important;
+        line-height: 1.65 !important;
+    }
+
+    /* Buttons: comfortable mobile touch targets */
+    .stButton > button,
+    .stDownloadButton > button,
+    .stFormSubmitButton > button {
+        min-height: 44px;
+        max-width: 100%;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        font-size: 0.95rem !important;
+        padding: 0.65rem 0.8rem !important;
     }
 
     /* Metric cards */
     [data-testid="stMetric"] {
-        background: #FFFFFF;
-        padding: 20px;
-        border-radius: 14px;
-        border: 1px solid #DFE7F1;
-        box-shadow: 0 3px 12px rgba(20, 48, 74, 0.06);
-    }
-
-    [data-testid="stMetricLabel"] {
-        color: #526780 !important;
-    }
-
-    [data-testid="stMetricValue"] {
-        color: #12304A !important;
-        font-weight: 700;
-    }
-
-    /* Buttons */
-    .stButton > button,
-    .stDownloadButton > button {
-        background: #087E8B;
-        color: #FFFFFF !important;
-        border: 1px solid #087E8B;
-        border-radius: 9px;
-        padding: 0.55rem 1rem;
-        font-weight: 600;
-        transition: background-color 0.2s ease,
-                    border-color 0.2s ease;
-    }
-
-    .stButton > button:hover,
-    .stDownloadButton > button:hover {
-        background: #066570;
-        border-color: #066570;
-        color: #FFFFFF !important;
-    }
-
-    .stButton > button:focus,
-    .stDownloadButton > button:focus {
-        box-shadow: 0 0 0 3px rgba(8, 126, 139, 0.25);
-        outline: none;
-    }
-
-    /* Input fields */
-    div[data-baseweb="select"] > div,
-    div[data-baseweb="input"] > div {
-        background-color: #FFFFFF;
-        border-color: #CCD8E5;
-        border-radius: 8px;
-    }
-
-    /* Dataframe container */
-    [data-testid="stDataFrame"] {
-        background: #FFFFFF;
-        border: 1px solid #DFE7F1;
-        border-radius: 12px;
+        padding: 12px !important;
+        min-width: 0;
         overflow: hidden;
     }
 
-    /* General text */
-    .history-subtitle {
-        color: #526780;
-        font-size: 15px;
+    [data-testid="stMetricLabel"] {
+        font-size: 0.85rem !important;
+        white-space: normal !important;
     }
 
-    hr {
-        border-color: #DFE7F1;
+    [data-testid="stMetricValue"] {
+        font-size: clamp(1rem, 4vw, 1.4rem) !important;
+        overflow-wrap: anywhere;
     }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+
+    /* Tables and dataframes */
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /* Charts */
+    [data-testid="stPlotlyChart"] {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        padding: 4px !important;
+    }
+
+    /* Inputs and dropdowns */
+    [data-testid="stTextInput"],
+    [data-testid="stNumberInput"],
+    [data-testid="stSelectbox"],
+    [data-testid="stDateInput"],
+    [data-testid="stMultiSelect"] {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Alerts */
+    [data-testid="stAlert"] {
+        padding: 0.8rem !important;
+        overflow-wrap: anywhere;
+    }
+
+    /* Reduce excess divider spacing */
+    hr {
+        margin-top: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+}
+
+/* Small mobile phones */
+@media screen and (max-width: 480px) {
+
+    .main .block-container {
+        padding: 1rem 0.75rem 1.5rem 0.75rem !important;
+    }
+
+    h1 {
+        font-size: 1.55rem !important;
+        line-height: 1.35 !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    .history-subtitle {
+        font-size: 0.92rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 10px !important;
+        border-radius: 10px !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1rem !important;
+    }
+
+    .stButton > button,
+    .stDownloadButton > button {
+        width: 100%;
+    }
+
+    [data-testid="stPlotlyChart"] {
+        padding: 0 !important;
+    }
+}
+
+/* =========================================
+   MOBILE HEADER AND SIDEBAR TOGGLE FIX
+========================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* Reduce excess space above the page heading */
+    [data-testid="stMainBlockContainer"],
+    .main .block-container {
+        padding-top: 0.6rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+
+    /* Keep the Streamlit header compact */
+    [data-testid="stHeader"] {
+        height: 2.5rem !important;
+        min-height: 2.5rem !important;
+    }
+
+    /* Reduce space around the sidebar toggle */
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"] {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    [data-testid="stSidebarCollapsedControl"] button,
+    [data-testid="collapsedControl"] button {
+        width: 2rem !important;
+        min-width: 2rem !important;
+        height: 2rem !important;
+        min-height: 2rem !important;
+        padding: 0.2rem !important;
+        border-radius: 6px !important;
+    }
+
+    /* Prevent the title and buttons from overflowing */
+    .stButton > button {
+        max-width: 100%;
+        white-space: normal !important;
+    }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 480px) {
+    [data-testid="stMainBlockContainer"],
+    .main .block-container {
+        padding-top: 0.4rem !important;
+        padding-left: 0.65rem !important;
+        padding-right: 0.65rem !important;
+    }
+
+    h1 {
+        font-size: 1.35rem !important;
+    }
+}
+
+
+</style>
+""", unsafe_allow_html=True)
+
+ 
 
 
 # --------------------------------------------------

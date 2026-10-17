@@ -1,4 +1,3 @@
-
 import streamlit as st
 import requests
 import pandas as pd
@@ -25,153 +24,837 @@ API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 st.markdown("""
 <style>
 
-/* Main app background */
+/* =========================================
+   1. GLOBAL DARK THEME
+========================================= */
+
+:root {
+    --bg-main: #0B1220;
+    --bg-card: #142238;
+    --bg-card-hover: #1A2D46;
+    --bg-input: #101C2E;
+    --bg-sidebar: #0D1B2D;
+    --border: #2B405B;
+    --text-main: #E5EDF8;
+    --text-muted: #9FB0C8;
+    --accent: #19C3B3;
+    --accent-hover: #13A99B;
+}
+
 .stApp {
-    background-color: #F4F7FC !important;
-    color: #172B4D !important;
+    background: var(--bg-main);
+    color: var(--text-main);
 }
 
-/* Streamlit top header */
+/* Main content area */
+.main .block-container {
+    padding-top: 2rem;
+    padding-bottom: 2.5rem;
+    max-width: 1500px;
+}
+
+/* Default text */
+html,
+body,
+[data-testid="stAppViewContainer"],
+[data-testid="stHeader"],
+[data-testid="stMain"] {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+h1, h2, h3, h4, h5, h6,
+p, label, li, span,
+.stMarkdown,
+[data-testid="stMarkdownContainer"] {
+    color: var(--text-main);
+}
+
+/* Muted helper text */
+small,
+.stCaption,
+[data-testid="stCaptionContainer"] {
+    color: var(--text-muted) !important;
+}
+
+/* Header area */
 [data-testid="stHeader"] {
-    background-color: #F4F7FC !important;
+    background: rgba(11, 18, 32, 0.95);
 }
 
-/* Toolbar icons */
-[data-testid="stToolbar"] {
-    color: #12304A !important;
-}
+/* =========================================
+   2. SIDEBAR
+========================================= */
 
-/* Main content layout */
-.block-container {
-    padding-top: 1.8rem;
-    padding-bottom: 2rem;
-    max-width: 1400px;
-}
-
-/* Sidebar */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #102A43 0%, #163D5C 100%) !important;
+    background: linear-gradient(
+        180deg,
+        #0D1B2D 0%,
+        #10253B 100%
+    );
+    border-right: 1px solid var(--border);
 }
 
-[data-testid="stSidebar"] * {
-    color: #F0F6FC;
+[data-testid="stSidebar"] > div:first-child {
+    background: transparent;
 }
 
-/* Metric cards */
-div[data-testid="stMetric"] {
-    background-color: #FFFFFF;
-    padding: 18px;
-    border-radius: 12px;
-    border: 1px solid #DFE7F1;
-    box-shadow: 0 3px 12px rgba(20, 48, 74, 0.06);
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] span {
+    color: var(--text-main);
 }
 
-[data-testid="stMetricLabel"],
-[data-testid="stMetricLabel"] p {
-    color: #526780 !important;
+/* Sidebar divider */
+[data-testid="stSidebar"] hr {
+    border-color: var(--border);
+}
+
+/* =========================================
+   3. SIDEBAR COLLAPSE / EXPAND TOGGLE
+   Keep the toggle visible without hover.
+========================================= */
+
+/* Streamlit toggle selectors vary by version */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"],
+button[kind="header"] {
     opacity: 1 !important;
-    font-size: 0.95rem;
+    visibility: visible !important;
 }
 
-[data-testid="stMetricValue"],
-[data-testid="stMetricValue"] div {
-    color: #12304A !important;
+/* Toggle button styling */
+[data-testid="stSidebarCollapseButton"] button,
+[data-testid="stSidebarCollapsedControl"] button,
+[data-testid="collapsedControl"] button,
+button[kind="header"] {
+    background-color: #142238 !important;
+    color: var(--accent) !important;
+    border: 1px solid #19C3B3 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 0 10px rgba(25, 195, 179, 0.15);
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Toggle icon */
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="collapsedControl"] svg,
+button[kind="header"] svg {
+    color: var(--accent) !important;
+    fill: var(--accent) !important;
+    stroke: var(--accent) !important;
+    opacity: 1 !important;
+}
+
+/* Hover effect */
+[data-testid="stSidebarCollapseButton"] button:hover,
+[data-testid="stSidebarCollapsedControl"] button:hover,
+[data-testid="collapsedControl"] button:hover,
+button[kind="header"]:hover {
+    background-color: #1B3650 !important;
+    border-color: #5DE8DA !important;
+    color: #5DE8DA !important;
+}
+
+/* =========================================
+   4. METRIC CARDS
+========================================= */
+
+[data-testid="stMetric"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+[data-testid="stMetric"]:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--text-muted) !important;
+}
+
+[data-testid="stMetricValue"] {
+    color: var(--text-main) !important;
     font-weight: 700;
 }
 
-/* Alerts */
-[data-testid="stAlert"] {
-    background-color: #FFF4CC !important;
-    color: #7C4A03 !important;
+[data-testid="stMetricDelta"] {
+    color: var(--accent) !important;
 }
 
-[data-testid="stAlert"] p,
-[data-testid="stAlert"] div,
-[data-testid="stAlert"] span {
-    color: #7C4A03 !important;
-}
+/* =========================================
+   5. BUTTONS
+========================================= */
 
-/* Buttons */
 .stButton > button,
 .stFormSubmitButton > button {
-    background-color: #087E8B;
-    color: #FFFFFF !important;
-    border: 1px solid #087E8B;
+    background: var(--accent);
+    color: #061923 !important;
+    border: 1px solid var(--accent);
     border-radius: 9px;
-    font-weight: 600;
-    transition: background-color 0.2s ease;
+    padding: 0.55rem 1.1rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.stButton > button p,
+.stFormSubmitButton > button p {
+    color: #061923 !important;
+    font-weight: 700;
 }
 
 .stButton > button:hover,
 .stFormSubmitButton > button:hover {
-    background-color: #066570;
-    border-color: #066570;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
     color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(25, 195, 179, 0.2);
 }
 
-/* Disclaimer */
-.disclaimer {
-    background-color: #E8F4F5;
-    color: #164E63;
-    padding: 14px 16px;
-    border-radius: 8px;
-    border-left: 4px solid #087E8B;
-    font-size: 0.92rem;
+.stButton > button:focus,
+.stFormSubmitButton > button:focus {
+    box-shadow: 0 0 0 2px rgba(25, 195, 179, 0.35);
 }
 
-/* Form fields */
-div[data-baseweb="input"] > div,
-div[data-baseweb="select"] > div {
-    background-color: #FFFFFF;
-    border-radius: 8px;
-    border-color: #CCD8E5;
+/* Disabled buttons */
+.stButton > button:disabled,
+.stFormSubmitButton > button:disabled {
+    background: #26384E;
+    color: #8395AC !important;
+    border-color: #344960;
 }
 
-/* Hide Streamlit input keyboard hints */
-div[data-testid="InputInstructions"],
-div[data-testid="InputInstructions"] *,
-[data-testid="stForm"] small {
+/* =========================================
+   6. INPUTS AND SELECTBOXES
+========================================= */
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea,
+[data-baseweb="input"] input,
+[data-baseweb="textarea"] textarea {
+    background-color: var(--bg-input) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    caret-color: var(--accent);
+}
+
+/* Selectbox */
+[data-baseweb="select"] > div {
+    background-color: var(--bg-input) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+    border-radius: 8px !important;
+}
+
+/* Selected dropdown value */
+[data-baseweb="select"] span {
+    color: var(--text-main) !important;
+}
+
+/* Dropdown menu */
+[data-baseweb="popover"],
+[data-baseweb="menu"],
+[data-baseweb="list"] {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border) !important;
+}
+
+[role="option"] {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+}
+
+[role="option"]:hover {
+    background-color: var(--bg-card-hover) !important;
+}
+
+/* Input focus */
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stTextArea textarea:focus,
+[data-baseweb="input"]:focus-within,
+[data-baseweb="select"]:focus-within {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent) !important;
+}
+
+
+/* Number input: preserve Streamlit's internal layout */
+[data-testid="stNumberInput"] {
+    width: 100%;
+    min-width: 0;
+}
+
+[data-testid="stNumberInput"] [data-baseweb="input"] {
+    background-color: #101C2E !important;
+    border: 1px solid #2B405B !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: none;
+}
+
+[data-testid="stNumberInput"] input {
+    background-color: transparent !important;
+    color: #E5EDF8 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    min-width: 0;
+}
+
+/* Number increment/decrement controls */
+[data-testid="stNumberInput"] button {
+    color: #E5EDF8 !important;
+    background-color: #142238 !important;
+    border: none !important;
+}
+
+/* Hide the form-submit hint, without hiding other small text */
+[data-testid="stForm"] [data-testid="stFormSubmitter"] small,
+[data-testid="stForm"] [data-testid="stFormSubmitter"] [data-testid="stTooltipHoverTarget"] {
     display: none !important;
 }
 
-/* Sidebar expand/collapse control — target the control and its button */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="collapsedControl"] button,
-[data-testid="stSidebarCollapsedControl"] button,
-button[data-testid="collapsedControl"],
-button[data-testid="stSidebarCollapsedControl"] {
-    visibility: visible !important;
-    opacity: 1 !important;
-    background: #0D9488 !important;
-    border: 2px solid #FFFFFF !important;
-    border-radius: 8px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25) !important;
+/* =========================================
+   7. RADIO BUTTONS AND CHECKBOXES
+========================================= */
+
+[data-testid="stRadio"] label,
+[data-testid="stCheckbox"] label {
+    color: var(--text-main) !important;
 }
 
-/* Keep the toggle icon white */
-[data-testid="collapsedControl"] svg,
-[data-testid="stSidebarCollapsedControl"] svg,
-button[data-testid="collapsedControl"] svg,
-button[data-testid="stSidebarCollapsedControl"] svg {
-    color: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-    fill: none !important;
-    opacity: 1 !important;
+[data-testid="stRadio"] [role="radiogroup"] {
+    gap: 0.4rem;
 }
 
-/* Hover state */
-[data-testid="collapsedControl"]:hover,
-[data-testid="stSidebarCollapsedControl"]:hover,
-[data-testid="collapsedControl"] button:hover,
-[data-testid="stSidebarCollapsedControl"] button:hover {
-    background: #0F766E !important;
+[data-testid="stCheckbox"] input {
+    accent-color: var(--accent);
 }
+
+/* =========================================
+   8. FORMS AND CONTAINERS
+========================================= */
+
+[data-testid="stForm"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+[data-testid="stVerticalBlockBorderWrapper"] {
+    border-color: var(--border) !important;
+    border-radius: 12px;
+}
+
+/* =========================================
+   9. ALERTS AND STATUS MESSAGES
+========================================= */
+
+[data-testid="stAlert"] {
+    background-color: #14263B;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-main);
+}
+
+[data-testid="stAlert"] p,
+[data-testid="stAlert"] span {
+    color: var(--text-main) !important;
+}
+
+/* Success */
+[data-testid="stAlert"][kind="success"] {
+    background-color: #102E2D;
+    border-color: #176B64;
+}
+
+/* Warning */
+[data-testid="stAlert"][kind="warning"] {
+    background-color: #302719;
+    border-color: #8C682B;
+}
+
+/* Error */
+[data-testid="stAlert"][kind="error"] {
+    background-color: #351F2A;
+    border-color: #8E3B51;
+}
+
+/* =========================================
+   10. DATAFRAMES AND TABLES
+========================================= */
+
+[data-testid="stDataFrame"],
+[data-testid="stTable"] {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+[data-testid="stDataFrame"] * {
+    color: var(--text-main);
+}
+
+/* =========================================
+   11. TABS
+========================================= */
+
+[data-testid="stTabs"] button {
+    color: var(--text-muted) !important;
+}
+
+[data-testid="stTabs"] button[aria-selected="true"] {
+    color: var(--accent) !important;
+    border-bottom-color: var(--accent) !important;
+}
+
+[data-testid="stTabs"] button:hover {
+    color: var(--text-main) !important;
+}
+
+/* =========================================
+   12. EXPANDERS
+========================================= */
+
+[data-testid="stExpander"] {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+[data-testid="stExpander"] summary {
+    color: var(--text-main) !important;
+}
+
+/* =========================================
+   13. LINKS
+========================================= */
+
+a {
+    color: var(--accent) !important;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #5DE8DA !important;
+    text-decoration: underline;
+}
+
+/* =========================================
+   14. PROGRESS INDICATORS
+========================================= */
+
+[data-testid="stProgressBar"] > div > div {
+    background-color: var(--accent) !important;
+}
+
+/* =========================================
+   15. SPINNER
+========================================= */
+
+[data-testid="stSpinner"] {
+    color: var(--accent) !important;
+}
+
+/* =========================================
+   16. PLOTLY CHART CONTAINER
+========================================= */
+
+[data-testid="stPlotlyChart"] {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    overflow: hidden;
+}
+
+/* =========================================
+   17. SCROLLBARS
+========================================= */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #344960;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #526C88;
+}
+
+/* =========================================
+   18. RESPONSIVE LAYOUT
+========================================= */
+
+@media (max-width: 768px) {
+    .main .block-container {
+        padding: 1rem 0.8rem 2rem 0.8rem;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 12px;
+    }
+
+    [data-testid="stForm"] {
+        padding: 12px;
+    }
+}
+/* Hide Streamlit's top-right menu */
+#MainMenu {
+    visibility: hidden !important;
+    display: none !important;
+}
+
+/* Hide the Streamlit footer */
+footer {
+    visibility: hidden !important;
+    display: none !important;
+}
+
+/* Hide the Deploy button, if present */
+.stDeployButton {
+    display: none !important;
+}
+/* Additional responsive improvements */
+
+/* Prevent content from overflowing */
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.block-container {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Make buttons fit smaller screens */
+.stButton > button,
+.stDownloadButton > button,
+.stFormSubmitButton > button {
+    max-width: 100%;
+    white-space: normal;
+}
+
+/* Keep charts within the available width */
+[data-testid="stPlotlyChart"],
+[data-testid="stDataFrame"] {
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* Mobile layout */
+@media screen and (max-width: 768px) {
+    .block-container {
+        padding: 1rem 0.75rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 12px !important;
+        overflow-wrap: anywhere;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1.25rem;
+    }
+
+    h1 {
+        font-size: 1.7rem !important;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .stButton > button,
+    .stDownloadButton > button,
+    .stFormSubmitButton > button {
+        width: 100%;
+    }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 480px) {
+    .block-container {
+        padding: 0.75rem 0.5rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 10px !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1.1rem;
+    }
+}
+
+/* Hide the form keyboard-submit hint */
+[data-testid="stForm"] [data-testid="InputInstructions"],
+[data-testid="stForm"] [data-testid="stInputInstructions"],
+[data-testid="stForm"] [data-testid="stNumberInput"] [data-testid="InputInstructions"],
+[data-testid="stForm"] [data-testid="stNumberInput"] [data-testid="stInputInstructions"] {
+    display: none !important;
+}
+
+/* Hide the visible "form" label inside number inputs */
+[data-testid="stNumberInput"] [data-baseweb="input"] + div {
+    display: none !important;
+}
+
+/* =========================================
+   MOBILE RESPONSIVE DESIGN
+========================================= */
+
+/* Prevent horizontal overflow */
+html,
+body,
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+.main .block-container {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Keep all elements within their containers */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Tablet and mobile */
+@media screen and (max-width: 768px) {
+
+    .main .block-container {
+        padding: 1.25rem 1rem 2rem 1rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Responsive page headings */
+    h1 {
+        font-size: clamp(1.65rem, 6vw, 2.2rem) !important;
+        line-height: 1.3 !important;
+        overflow-wrap: anywhere;
+    }
+
+    h2 {
+        font-size: 1.4rem !important;
+        line-height: 1.35 !important;
+    }
+
+    h3 {
+        font-size: 1.2rem !important;
+    }
+
+    /* Body text */
+    p,
+    .history-subtitle,
+    [data-testid="stMarkdownContainer"] {
+        overflow-wrap: anywhere;
+        word-break: normal;
+    }
+
+    .history-subtitle {
+        font-size: 0.98rem !important;
+        line-height: 1.65 !important;
+    }
+
+    /* Buttons: comfortable mobile touch targets */
+    .stButton > button,
+    .stDownloadButton > button,
+    .stFormSubmitButton > button {
+        min-height: 44px;
+        max-width: 100%;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+        font-size: 0.95rem !important;
+        padding: 0.65rem 0.8rem !important;
+    }
+
+    /* Metric cards */
+    [data-testid="stMetric"] {
+        padding: 12px !important;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    [data-testid="stMetricLabel"] {
+        font-size: 0.85rem !important;
+        white-space: normal !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: clamp(1rem, 4vw, 1.4rem) !important;
+        overflow-wrap: anywhere;
+    }
+
+    /* Tables and dataframes */
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /* Charts */
+    [data-testid="stPlotlyChart"] {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        padding: 4px !important;
+    }
+
+    /* Inputs and dropdowns */
+    [data-testid="stTextInput"],
+    [data-testid="stNumberInput"],
+    [data-testid="stSelectbox"],
+    [data-testid="stDateInput"],
+    [data-testid="stMultiSelect"] {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Alerts */
+    [data-testid="stAlert"] {
+        padding: 0.8rem !important;
+        overflow-wrap: anywhere;
+    }
+
+    /* Reduce excess divider spacing */
+    hr {
+        margin-top: 1.25rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+}
+
+/* Small mobile phones */
+@media screen and (max-width: 480px) {
+
+    .main .block-container {
+        padding: 1rem 0.75rem 1.5rem 0.75rem !important;
+    }
+
+    h1 {
+        font-size: 1.55rem !important;
+        line-height: 1.35 !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    h3 {
+        font-size: 1.1rem !important;
+    }
+
+    .history-subtitle {
+        font-size: 0.92rem !important;
+    }
+
+    [data-testid="stMetric"] {
+        padding: 10px !important;
+        border-radius: 10px !important;
+    }
+
+    [data-testid="stMetricValue"] {
+        font-size: 1rem !important;
+    }
+
+    .stButton > button,
+    .stDownloadButton > button {
+        width: 100%;
+    }
+
+    [data-testid="stPlotlyChart"] {
+        padding: 0 !important;
+    }
+}
+
+/* =========================================
+   MOBILE HEADER AND SIDEBAR TOGGLE FIX
+========================================= */
+
+@media screen and (max-width: 768px) {
+
+    /* Reduce excess space above the page heading */
+    [data-testid="stMainBlockContainer"],
+    .main .block-container {
+        padding-top: 0.6rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    
+
+    /* Keep the Streamlit header compact */
+        [data-testid="stHeader"] {
+            height: 2.5rem !important;
+            min-height: 2.5rem !important;
+        }
+
+    /* Reduce space around the sidebar toggle */
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"] {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    [data-testid="stSidebarCollapsedControl"] button,
+    [data-testid="collapsedControl"] button {
+        width: 2rem !important;
+        min-width: 2rem !important;
+        height: 2rem !important;
+        min-height: 2rem !important;
+        padding: 0.2rem !important;
+        border-radius: 6px !important;
+    }
+
+    /* Prevent the title and buttons from overflowing */
+    .stButton > button {
+        max-width: 100%;
+        white-space: normal !important;
+    }
+}
+
+/* Extra-small phones */
+@media screen and (max-width: 480px) {
+    [data-testid="stMainBlockContainer"],
+    .main .block-container {
+        padding-top: 0.4rem !important;
+        padding-left: 0.65rem !important;
+        padding-right: 0.65rem !important;
+    }
+
+    h1 {
+        font-size: 1.35rem !important;
+    }
+}
+
+
 </style>
 """, unsafe_allow_html=True)
-
 # --------------------------------------------------
 # Header
 # --------------------------------------------------
