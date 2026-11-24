@@ -789,7 +789,21 @@ except requests.exceptions.Timeout:
     st.stop()
 
 except requests.exceptions.HTTPError as exc:
-    st.error(f"History API returned an error: {exc}")
+
+    response = exc.response
+
+    st.error(
+        f"History API Error: {response.status_code}"
+    )
+
+    st.code(response.text[:2000])
+
+    st.json({
+        "server": response.headers.get("Server"),
+        "retry_after": response.headers.get("Retry-After"),
+        "content_type": response.headers.get("Content-Type"),
+    })
+
     st.stop()
 
 except (ValueError, requests.exceptions.RequestException) as exc:

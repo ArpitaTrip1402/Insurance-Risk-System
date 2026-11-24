@@ -985,8 +985,24 @@ if submitted:
         st.stop()
 
     except requests.exceptions.HTTPError as error:
-        st.error(f"The prediction API returned an error: {error}")
-        st.stop()
+
+       response = error.response
+
+       st.error(
+        f"Prediction API Error: {response.status_code}"
+        )
+
+       st.write("Response Body:")
+       st.code(response.text[:2000])
+
+       st.write("Response Headers:")
+       st.json({
+        "server": response.headers.get("Server"),
+        "retry_after": response.headers.get("Retry-After"),
+        "content_type": response.headers.get("Content-Type"),
+      })
+
+       st.stop()
 
     except (requests.exceptions.RequestException, ValueError, KeyError) as error:
         st.error(f"Could not process the prediction response: {error}")
